@@ -1,19 +1,8 @@
 const mongoose=require("mongoose")
 
-const adminSchema=new mongoose.Schema({
-    fullName:{
+const categorySchema=new mongoose.Schema({
+    categoryName:{
         type:String
-    },
-    email:{
-        type:String,
-        unique:true
-    },
-    password:{
-        type:String,
-    },
-    token:{
-        type:String,
-        default:""
     },
     status:{
         type:Boolean,
@@ -30,6 +19,8 @@ const adminSchema=new mongoose.Schema({
     updatedOn:{
         type:Date,
     },
+    
+
 })
 
-module.exports=mongoose.model("Admin",adminSchema)
+module.exports=mongoose.model("Category",categorySchema)
