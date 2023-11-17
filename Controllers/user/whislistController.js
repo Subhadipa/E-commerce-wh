@@ -4,14 +4,9 @@ const whisList = async (req, res) => {
   const { user, product } = req.body;
 
   if (req.user._id.toString() === user) {
-    let whisListCheck = await wishlistModel.aggregate([
-      {
-        $match: {
-          product: new mongoose.Types.ObjectId(product),
-        },
-      },
-    ]);
-    if (whisListCheck.length === 0) {
+    let whisListCheck = await wishlistModel.findOne({user,product})
+   
+    if (whisListCheck === null) {
       let wishListDataAdd = await wishlistModel.create({
         user,
         product,
@@ -22,7 +17,7 @@ const whisList = async (req, res) => {
         data: wishListDataAdd,
       });
     } else {
-       await wishlistModel.deleteOne({ product });
+       await wishlistModel.deleteOne({ user,product });
       return res.status(200).send({
         status: "true",
         message: "Product deleted from wishlist successfully!",
