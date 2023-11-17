@@ -4,7 +4,7 @@ const ObjectId = mongoose.Schema.Types.ObjectId;
 const productSchema = new mongoose.Schema({
   productName: {
     type: String,
-    // lowercase: true,
+    lowercase: true,
   },
   size: {
     type: [String],
