@@ -2,8 +2,9 @@ const adminModel = require("../../Models/adminModel");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
+
 function generateToken(userData) {
-  return jwt.sign(userData, "webhibe");
+  return jwt.sign(userData, process.env.SECRET_KEY);
 }
 
 const register = async (req, res) => {

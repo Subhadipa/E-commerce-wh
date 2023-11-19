@@ -22,6 +22,7 @@ const productCreate = async (req, res) => {
             productName: productName.toLowerCase(),
           },
         },
+      
       ]);
 
       if (productCheck.length !== 0) {
@@ -63,14 +64,45 @@ const productView = async (req, res) => {
             isDeleted: false,
           },
         },
+
+      
+        {
+          $lookup:{
+            from:"categories",
+            localField:"categoryId",
+            foreignField:"_id",
+            as:"categoryDetails"
+          }
+        },
+        {
+          $unwind: {
+            path: "$categoryDetails",
+            preserveNullAndEmptyArrays: true,
+          },
+        },
         {
           $project: {
             isDeleted: 0,
             createdOn: 0,
             __v: 0,
+            categoryDetails:{
+              _id:0,
+              status:0,
+              isDeleted:0,
+              createdOn:0,
+              __v:0
+              //categoryName:1
+            }
           },
         },
       ]);
+      //console.log(productDetailsFromDb)
+      if(productDetailsFromDb.length===0){
+        return res.status(400).send({
+          status: "false",
+          message: "Product list can't be fetched!",
+        });
+      }
       return res.status(200).send({
         status: "true",
         message: "All the products with category are here!",

@@ -43,12 +43,12 @@ user.middleware = async (req, res, next) => {
 
             if (usertype == "admin") {
                 userData = await adminController.getTokenData(authorization)
-                // console.log("userData",userData)
+               
             }else if(usertype == "user"){
                 userData = await userController.getTokenData(authorization)
             }
             //now we have user data which we can use fgetTokenDataurther
-
+           // console.log("userData",userData)
             if (userData && userData != null) {
                 userData.password = null;
                 userData.token = null;
