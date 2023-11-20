@@ -56,24 +56,24 @@ const getCart = async (req, res) => {
           },
         },
         {
-          $lookup:{
-            from:"users",
-            localField:"userId",
-            foreignField:'_id',
-            as:"userDetails"
-          }
+          $lookup: {
+            from: "users",
+            localField: "userId",
+            foreignField: "_id",
+            as: "userDetails",
+          },
         },
         {
-          $unwind:{
-            path:"$userDetails",
-            preserveNullAndEmptyArrays:true
-          }
+          $unwind: {
+            path: "$userDetails",
+            preserveNullAndEmptyArrays: true,
+          },
         },
         {
-          $lookup:{
-            from:"products",
-            localField:"items.product",
-            foreignField:'_id',
+          $lookup: {
+            from: "products",
+            localField: "items.product",
+            foreignField: "_id",
             pipeline: [
               {
                 $lookup: {
@@ -84,46 +84,45 @@ const getCart = async (req, res) => {
                 },
               },
             ],
-            as:"productDetails"
-          }
+            as: "productDetails",
+          },
         },
         {
-          $unwind:{
-            path:"$productDetails",
-            preserveNullAndEmptyArrays:true
-          }
+          $unwind: {
+            path: "$productDetails",
+            preserveNullAndEmptyArrays: true,
+          },
         },
         {
-          $project:{
-            userId:0,
+          $project: {
+            userId: 0,
             isDeleted: 0,
             createdOn: 0,
             __v: 0,
-           userDetails:{
-              email:0,
-              password:0,
-              token:0,
-              status:0,
-              isDeleted:0,
-              createdOn:0,
-              __v:0
-             
+            userDetails: {
+              email: 0,
+              password: 0,
+              token: 0,
+              status: 0,
+              isDeleted: 0,
+              createdOn: 0,
+              __v: 0,
             },
-            productDetails:{
-              status:0,
-              isDeleted:0,
-              createdOn:0,
-              __v:0,
-             categoryId:0,
-              categoryDetails:{
-                status:0,
-                isDeleted:0,
-                createdOn:0,
-                __v:0
-              }
-            }
-          }
-        }
+            productDetails: {
+              status: 0,
+              isDeleted: 0,
+              createdOn: 0,
+              __v: 0,
+              categoryId: 0,
+              categoryDetails: {
+                status: 0,
+                isDeleted: 0,
+                createdOn: 0,
+                __v: 0,
+              },
+            },
+          },
+        },
       ]);
       if (cartCheck.length === 0) {
         return res.status(400).send({
@@ -190,13 +189,11 @@ const cartUpdate = async (req, res) => {
               },
               { new: true }
             );
-            return res
-              .status(200)
-              .send({
-                status: "true",
-                message: "Quantity updated successfully!",
-                data: productQuantityUpdate,
-              });
+            return res.status(200).send({
+              status: "true",
+              message: "Quantity updated successfully!",
+              data: productQuantityUpdate,
+            });
           }
         } else {
           return res
