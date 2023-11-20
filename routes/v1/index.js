@@ -56,6 +56,7 @@ router.get("/user/product/view",userProductController.productView)
 //--------------------------User Cart Routes------------------------------
 router.post("/user/cart/create",cartController.cartCreate)
 router.get("/user/cart/view",cartController.getCart)
+router.put("/user/cart/update",cartController.cartUpdate)
 router.delete("/user/cart/delete",cartController.cartDelete)
 // ---------------------------User WishList Routes------------------------
 router.post("/user/wishlist",wishlistController.whisList)

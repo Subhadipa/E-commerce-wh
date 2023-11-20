@@ -85,8 +85,9 @@ const productView = async (req, res) => {
             isDeleted: 0,
             createdOn: 0,
             __v: 0,
+            categoryId:0,
             categoryDetails:{
-              _id:0,
+              
               status:0,
               isDeleted:0,
               createdOn:0,

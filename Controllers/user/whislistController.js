@@ -98,18 +98,18 @@ const getWishList = async (req, res) => {
           __v:0
          
         },
-        productDetails:{
+        items["productDetails"]:{
           status:0,
           isDeleted:0,
           createdOn:0,
           __v:0,
           categoryId:0,
-          categoryDetails:{
-            status:0,
-            isDeleted:0,
-            createdOn:0,
-            __v:0
-          }
+          // categoryDetails:{
+          //   status:0,
+          //   isDeleted:0,
+          //   createdOn:0,
+          //   __v:0
+          // }
         }
       }
     }

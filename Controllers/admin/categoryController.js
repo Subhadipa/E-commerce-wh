@@ -131,33 +131,7 @@ const categoryDelete = async (req, res) => {
   }
 };
 
-// const categoryView =(req,res)=>{
-//   categoryModel.aggregate([
-//     {
-//       $match:{
-//         isDeleted:false,
-//       }
-//     },
-//     {
-//       $project:{
-//       isDeleted:0,
-//       createdOn:0,
-//       __v:0
-//       }
-//     }
-//   ]).then((data)=>{
-//     res.status(200).json({
-//       status:true,
-//       message:"view succesfully",
-//       data:data
-//     })
-//   }).catch((error)=>{
-//     res.status(500).json({
-//       status:false,
-//       message:"error"
-//     })
-//   })
-// }
+
 module.exports = {
   categoryCreate,
   categoryView,

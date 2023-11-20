@@ -9,11 +9,35 @@ const productView = async (req, res) => {
               isDeleted: false,
             },
           },
+  
+        
+          {
+            $lookup:{
+              from:"categories",
+              localField:"categoryId",
+              foreignField:"_id",
+              as:"categoryDetails"
+            }
+          },
+          {
+            $unwind: {
+              path: "$categoryDetails",
+              preserveNullAndEmptyArrays: true,
+            },
+          },
           {
             $project: {
               isDeleted: 0,
               createdOn: 0,
               __v: 0,
+              categoryId:0,
+              categoryDetails:{
+                
+                status:0,
+                isDeleted:0,
+                createdOn:0,
+                __v:0
+              }
             },
           },
         ]);
