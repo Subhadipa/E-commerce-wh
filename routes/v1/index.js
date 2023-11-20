@@ -59,5 +59,6 @@ router.get("/user/cart/view",cartController.getCart)
 router.delete("/user/cart/delete",cartController.cartDelete)
 // ---------------------------User WishList Routes------------------------
 router.post("/user/wishlist",wishlistController.whisList)
+router.get("/user/wishlist/view",wishlistController.getWishList)
 //----------------------------User Checkout Routes------------------------
 module.exports = router;
