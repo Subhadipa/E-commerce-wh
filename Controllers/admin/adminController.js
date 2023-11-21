@@ -42,66 +42,77 @@ const adminView = async (req, res) => {
 };
 const adminUpdateData = async (req, res) => {
   try {
-    const { adminId, fullName } = req.body;
-    if (req.user._id.toString() === adminId) {
-      let adminUpdatedDataDb = await adminModel.findOneAndUpdate(
-        { _id: adminId, isDeleted: false },
-        { fullName },
-        {
-          new: true,
-        }
-      );
-
-      if (adminUpdatedDataDb !== null) {
-        return res.status(200).send({
-          status: "true",
-          message: "Data updated successfully!",
-          data: adminUpdatedDataDb,
-        });
-      } else {
-        6;
-        return res.status(400).send({
-          status: "false",
-          message: "Data can't be updated!",
-        });
-      }
-    } else {
+    const { fullName } = req.body;
+    const adminId=req.params.adminId
+    if (req.user.isDeleted === true) {
+      return res
+        .status(400)
+        .send({ status: "false", message: "Admin doesn't exist!" });
+    }
+    
+    if (req.user._id.toString() !== adminId) {
       return res.status(400).send({
         status: "false",
         message: "You are not authorize to update the data!",
       });
     }
+    let adminUpdatedDataDb = await adminModel.findOneAndUpdate(
+      { _id:adminId,isDeleted: false },
+      { fullName },
+      {
+        new: true,
+      }
+    );
+
+    if (adminUpdatedDataDb !== null) {
+      return res.status(200).send({
+        status: "true",
+        message: "Data updated successfully!",
+        data: adminUpdatedDataDb,
+      });
+    } else {
+      return res.status(400).send({
+        status: "false",
+        message: "Data can't be updated!",
+      });
+    }
+  
   } catch (error) {
     return res.status(500).send({ status: "false", message: error.message });
   }
 };
 const adminDelete = async (req, res) => {
   try {
-    const { adminId } = req.body;
-    if (req.user._id.toString() === adminId) {
-      let adminDataDb = await adminModel.findOneAndUpdate(
-        { _id: adminId, isDeleted: false },
-        { isDeleted: true },
-        {
-          new: true,
-        }
-      );
-      if (adminDataDb !== null) {
-        return res.status(200).send({
-          status: "true",
-          message: "Data deleted successfully!",
-          data: adminDataDb,
-        });
-      } else {
-        return res.status(400).send({
-          status: "false",
-          message: "Data can't be deleted!",
-        });
-      }
-    } else {
+    const adminId=req.params.adminId
+    if (req.user.isDeleted === true) {
+      return res
+        .status(400)
+        .send({ status: "false", message: "Admin doesn't exist!" });
+    }
+    if (req.user._id.toString() !== adminId) {
       return res.status(400).send({
         status: "false",
         message: "You are not authorize to delete the data!",
+      });
+    }
+
+    let adminDataDb = await adminModel.findOneAndUpdate(
+      { _id:adminId,isDeleted: false },
+      { isDeleted: true },
+      {
+        new: true,
+      }
+    );
+    if (adminDataDb !== null) {
+      return res.status(200).send({
+        status: "true",
+        message: "Data deleted successfully!",
+        data: adminDataDb,
+      });
+    } else {
+      return res.status(400).send({
+        status: "false",
+        message: "Data can't be deleted!",
       });
     }
   } catch (error) {

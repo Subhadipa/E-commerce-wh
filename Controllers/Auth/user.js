@@ -15,6 +15,7 @@ const register = async (req, res) => {
         {
           $match: {
             email,
+            isDeleted:false
           },
         },
       ]);
@@ -46,12 +47,12 @@ const register = async (req, res) => {
     try {
       const { email, password } = req.body;
   
-      let userCheck = await userModel.findOne({ email });
+      let userCheck = await userModel.findOne({ email,isDeleted:false });
       //console.log(userCheck)
       if (userCheck) {
         let passwordCheck = await bcrypt.compare(password, userCheck.password);
         if (passwordCheck) {
-          const { _id, fullName } = userCheck;
+          const { _id, fullName ,token} = userCheck;
           // let token = jwt.sign({ userId: userCheck._id }, "webhibe");
           // res.header("x-api-key", token);
           // await userModel.updateOne({ token: token });
@@ -59,7 +60,11 @@ const register = async (req, res) => {
           return res.status(200).send({
             status: "true",
             message: `${fullName} is logged in successfully`,
-            data: _id,
+            data: {
+              userId:_id,
+              token
+  
+            }
           });
         } else {
           return res

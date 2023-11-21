@@ -6,7 +6,7 @@ const adminSchema=new mongoose.Schema({
     },
     email:{
         type:String,
-        unique:true
+       // unique:true
     },
     password:{
         type:String,
@@ -31,5 +31,7 @@ const adminSchema=new mongoose.Schema({
         type:Date,
     },
 })
+
+adminSchema.index({ email: 1 }, { unique: true, partialFilterExpression: { email: { $exists: true }, isDeleted: false } });
 
 module.exports=mongoose.model("Admin",adminSchema)

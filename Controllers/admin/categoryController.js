@@ -4,31 +4,32 @@ const categoryCreate = async (req, res) => {
   try {
     const { categoryName } = req.body;
 
-    //let categoryCheck = await categoryModel.find({ categoryName });
-    if (req.user.isDeleted === false) {
-      let categoryCheck = await categoryModel.aggregate([
-        {
-          $match: {
-            categoryName: categoryName.toLowerCase(),
-          },
-        },
-      ]);
-      if (categoryCheck.length === 0) {
-        let categorysaveDb = await categoryModel.create({ categoryName });
-        return res.status(200).send({
-          status: "true",
-          message: "Category created successfully!",
-          data: categorysaveDb,
-        });
-      } else {
-        return res
-          .status(400)
-          .send({ status: "false", message: "Cateogry is present in the db!" });
-      }
-    } else {
+    if (req.user.isDeleted === true) {
       return res
         .status(400)
         .send({ status: "false", message: "Admin doesn't exist!" });
+    }
+
+    //let categoryCheck = await categoryModel.find({ categoryName });
+
+    let categoryCheck = await categoryModel.aggregate([
+      {
+        $match: {
+          categoryName: categoryName.toLowerCase(),
+        },
+      },
+    ]);
+    if (categoryCheck.length === 0) {
+      let categorysaveDb = await categoryModel.create({ categoryName });
+      return res.status(200).send({
+        status: "true",
+        message: "Category created successfully!",
+        data: categorysaveDb,
+      });
+    } else {
+      return res
+        .status(400)
+        .send({ status: "false", message: "Cateogry is present in the db!" });
     }
   } catch (error) {
     return res.status(500).send({ status: "false", message: error.message });
@@ -68,31 +69,32 @@ const categoryView = async (req, res) => {
 };
 const categoryUpdateData = async (req, res) => {
   try {
-    const { categoryId, categoryName } = req.body;
-    if (req.user.isDeleted === false) {
-      let categoryUpdatedDataDb = await categoryModel.findOneAndUpdate(
-        { _id: categoryId, isDeleted: false },
-        { categoryName: categoryName.toLowerCase() },
-        {
-          new: true,
-        }
-      );
-      if (categoryUpdatedDataDb !== null) {
-        return res.status(200).send({
-          status: "true",
-          message: "Data updated successfully!",
-          data: categoryUpdatedDataDb,
-        });
-      } else {
-        return res.status(400).send({
-          status: "false",
-          message: "Data can't be updated!",
-        });
-      }
-    } else {
+    const { categoryName } = req.body;
+    const categoryId = req.params.categoryId;
+    if (req.user.isDeleted === true) {
       return res
         .status(400)
         .send({ status: "false", message: "Admin doesn't exist!" });
+    }
+
+    let categoryUpdatedDataDb = await categoryModel.findOneAndUpdate(
+      { _id: categoryId, isDeleted: false },
+      { categoryName: categoryName.toLowerCase() },
+      {
+        new: true,
+      }
+    );
+    if (categoryUpdatedDataDb !== null) {
+      return res.status(200).send({
+        status: "true",
+        message: "Data updated successfully!",
+        data: categoryUpdatedDataDb,
+      });
+    } else {
+      return res.status(400).send({
+        status: "false",
+        message: "Data can't be updated!",
+      });
     }
   } catch (error) {
     return res.status(500).send({ status: "false", message: error.message });
@@ -100,37 +102,36 @@ const categoryUpdateData = async (req, res) => {
 };
 const categoryDelete = async (req, res) => {
   try {
-    const { categoryId } = req.body;
-    if (req.user.isDeleted === false) {
-      let categoryDataDb = await categoryModel.findOneAndUpdate(
-        { _id: categoryId, isDeleted: false },
-        { isDeleted: true },
-        {
-          new: true,
-        }
-      );
-      if (categoryDataDb !== null) {
-        return res.status(200).send({
-          status: "true",
-          message: "Data deleted successfully!",
-          data: categoryDataDb,
-        });
-      } else {
-        return res.status(400).send({
-          status: "false",
-          message: "Data can't be deleted!",
-        });
-      }
-    } else {
+    const categoryId = req.params.categoryId;
+    if (req.user.isDeleted === true) {
       return res
         .status(400)
         .send({ status: "false", message: "Admin doesn't exist!" });
+    }
+
+    let categoryDataDb = await categoryModel.findOneAndUpdate(
+      { _id: categoryId, isDeleted: false },
+      { isDeleted: true },
+      {
+        new: true,
+      }
+    );
+    if (categoryDataDb !== null) {
+      return res.status(200).send({
+        status: "true",
+        message: "Data deleted successfully!",
+        data: categoryDataDb,
+      });
+    } else {
+      return res.status(400).send({
+        status: "false",
+        message: "Data can't be deleted!",
+      });
     }
   } catch (error) {
     return res.status(500).send({ status: "false", message: error.message });
   }
 };
-
 
 module.exports = {
   categoryCreate,

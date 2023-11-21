@@ -42,8 +42,21 @@ const userView = async (req, res) => {
 };
 const userUpdateData = async (req, res) => {
   try {
-    const { userId, fullName } = req.body;
-    if (req.user._id.toString() === userId) {
+    const {fullName } = req.body;
+    const userId=req.params.userId
+    if (req.user.isDeleted === true) {
+      return res
+        .status(400)
+        .send({ status: "false", message: "Admin doesn't exist!" });
+    }
+    
+    if (req.user._id.toString() !== userId) {
+      return res.status(400).send({
+        status: "false",
+        message: "You are not authorize to update the data!",
+      });
+    }
+    
       let userUpdatedDataDb = await userModel.findOneAndUpdate(
         { _id: userId, isDeleted: false },
         { fullName },
@@ -66,20 +79,27 @@ const userUpdateData = async (req, res) => {
         });
       
       }
-    } else {
-      return res.status(400).send({
-        status: "false",
-        message: "You are not authorize to update the data!",
-      });
-    }
+  
   } catch (error) {
     return res.status(500).send({ status: "false", message: error.message });
   }
 };
 const userDelete = async (req, res) => {
   try {
-    const { userId } = req.body;
-    if (req.user._id.toString() === userId) {
+    const userId=req.params.userId
+    if (req.user.isDeleted === true) {
+      return res
+        .status(400)
+        .send({ status: "false", message: "Admin doesn't exist!" });
+    }
+    
+    if (req.user._id.toString() !== userId) {
+      return res.status(400).send({
+        status: "false",
+        message: "You are not authorize to update the data!",
+      });
+    }
+    
       let userDataDb = await userModel.findOneAndUpdate(
         { _id: userId, isDeleted: false },
         { isDeleted: true },
@@ -99,12 +119,7 @@ const userDelete = async (req, res) => {
           message: "Data can't be deleted!",
         });
       }
-    } else {
-      return res.status(400).send({
-        status: "false",
-        message: "You are not authorize to delete the data!",
-      });
-    }
+  
   } catch (error) {
     return res.status(500).send({ status: "false", message: error.message });
   }

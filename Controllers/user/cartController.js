@@ -4,10 +4,24 @@ const mongoose = require("mongoose");
 
 const cartCreate = async (req, res) => {
   try {
-    const { userId, items } = req.body;
-    let totalAmount = 0;
-
-    if (req.user._id.toString() === userId) {
+    
+    const { userId,items } = req.body;
+    let productTotalAmount = 0;
+    let total=0,createdObj={};
+    let newItems=[]
+    if (req.user.isDeleted === true) {
+      return res
+        .status(400)
+        .send({ status: "false", message: "User doesn't exist!" });
+    }
+    
+    if (req.user._id.toString() !== userId) {
+      return res.status(400).send({
+        status: "false",
+        message: "You are not authorize to create the cart!",
+      });
+    }
+   
       for (const element of items) {
         const productCheck = await productModel.aggregate([
           {
@@ -24,30 +38,45 @@ const cartCreate = async (req, res) => {
             message: `Product doesn't exist!`,
           });
         }
-        totalAmount += parseInt(productCheck[0].price * element.quantity);
+      
+       productTotalAmount = parseInt(productCheck[0].price * element.quantity);
+       total+=productTotalAmount
+       createdObj={
+        product: element.product,
+        quantity: element.quantity,
+        productTotal: productTotalAmount,
+      };
+       newItems.push(createdObj)
+     
       }
-
-      cartObject = { ...req.body, total: totalAmount };
-      const cartDataSavedInDB = await cartModel.create(cartObject);
+    
+     const cartDataSavedInDB = await cartModel.create({userId,items:newItems,total});
       return res.status(200).send({
         status: "true",
         message: "Cart created successfully!",
         data: cartDataSavedInDB,
       });
-    } else {
-      return res.status(400).send({
-        status: "false",
-        message: "You are not authorize to create the cart!",
-      });
-    }
+  
   } catch (error) {
     return res.status(500).send({ status: "false", message: error.message });
   }
 };
 const getCart = async (req, res) => {
   try {
-    const { userId } = req.body;
-    if (req.user._id.toString() === userId) {
+    const userId = req.params.userId;
+    if (req.user.isDeleted === true) {
+      return res
+        .status(400)
+        .send({ status: "false", message: "User doesn't exist!" });
+    }
+    
+    if (req.user._id.toString() !== userId) {
+      return res.status(400).send({
+        status: "false",
+        message: "You are not authorize to fetch the cart!",
+      });
+    }
+   
       const cartCheck = await cartModel.aggregate([
         {
           $match: {
@@ -87,12 +116,13 @@ const getCart = async (req, res) => {
             as: "productDetails",
           },
         },
-        {
-          $unwind: {
-            path: "$productDetails",
-            preserveNullAndEmptyArrays: true,
-          },
-        },
+        // {
+        //   $unwind: {
+        //     path: "$productDetails",
+        //     preserveNullAndEmptyArrays: true,
+        //   },
+        // },
+       
         {
           $project: {
             userId: 0,
@@ -124,6 +154,7 @@ const getCart = async (req, res) => {
           },
         },
       ]);
+     // console.log(cartCheck)
       if (cartCheck.length === 0) {
         return res.status(400).send({
           status: "false",
@@ -136,12 +167,7 @@ const getCart = async (req, res) => {
           data: cartCheck,
         });
       }
-    } else {
-      return res.status(400).send({
-        status: "false",
-        message: "You are not authorize to get the cart!",
-      });
-    }
+   
   } catch (error) {
     return res.status(500).send({ status: "false", message: error.message });
   }
