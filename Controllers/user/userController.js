@@ -47,7 +47,7 @@ const userUpdateData = async (req, res) => {
     if (req.user.isDeleted === true) {
       return res
         .status(400)
-        .send({ status: "false", message: "Admin doesn't exist!" });
+        .send({ status: "false", message: "User doesn't exist!" });
     }
     
     if (req.user._id.toString() !== userId) {
@@ -90,7 +90,7 @@ const userDelete = async (req, res) => {
     if (req.user.isDeleted === true) {
       return res
         .status(400)
-        .send({ status: "false", message: "Admin doesn't exist!" });
+        .send({ status: "false", message: "User doesn't exist!" });
     }
     
     if (req.user._id.toString() !== userId) {

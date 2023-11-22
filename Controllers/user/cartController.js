@@ -174,9 +174,23 @@ const getCart = async (req, res) => {
 };
 const cartUpdate = async (req, res) => {
   try {
-    const { userId, cartId, items } = req.body;
+    const userId = req.params.userId;
+    const cartId=req.params.cartId
+    if (req.user.isDeleted === true) {
+      return res
+        .status(400)
+        .send({ status: "false", message: "User doesn't exist!" });
+    }
+    
+    if (req.user._id.toString() !== userId) {
+      return res.status(400).send({
+        status: "false",
+        message: "You are not authorize to update the cart!",
+      });
+    }
+    const {items } = req.body;
     let totalAmount = 0;
-    if (req.user._id.toString() === userId) {
+   
       for (let element of items) {
         let productCheck = await productModel.findOne({
           _id: new mongoose.Types.ObjectId(element.product),
@@ -185,10 +199,11 @@ const cartUpdate = async (req, res) => {
         if (productCheck) {
           const cartCheck = await cartModel.findOne({
             _id: cartId,
+            userId,
             "items.product": new mongoose.Types.ObjectId(element.product),
             isDeleted: false,
           });
-          //console.log(cartCheck)
+         // console.log(cartCheck)
           if (cartCheck === null) {
             return res
               .status(400)
@@ -197,19 +212,22 @@ const cartUpdate = async (req, res) => {
             const cartPreviousQuantity = cartCheck.items.filter(
               (prod) => prod.product == element.product
             );
+          //  console.log(cartPreviousQuantity)
             let pervQuantity = cartPreviousQuantity[0].quantity;
-            totalAmount +=
-              cartCheck.total +
-              Math.abs(pervQuantity - element.quantity) * productCheck.price;
+            let prevProductTotal=cartPreviousQuantity[0].productTotal
+            prevProductTotal+=Math.abs(pervQuantity - element.quantity)* productCheck.price
+            totalAmount +=cartCheck.total +Math.abs(pervQuantity - element.quantity) * productCheck.price;
             const productQuantityUpdate = await cartModel.findOneAndUpdate(
               {
                 _id: cartId,
+                userId,
                 "items.product": new mongoose.Types.ObjectId(element.product),
                 isDeleted: false,
               },
               {
                 $set: {
                   "items.$.quantity": element.quantity,
+                  "items.$.productTotal":prevProductTotal,
                   total: totalAmount,
                 },
               },
@@ -227,23 +245,31 @@ const cartUpdate = async (req, res) => {
             .send({ status: "false", message: "Product doesn't exist!" });
         }
       }
-    } else {
-      return res.status(400).send({
-        status: "false",
-        message: "You are not authorize to update the cart!",
-      });
-    }
+    
   } catch (error) {
-    console.log(error);
+    //console.log(error);
     return res.status(500).send({ status: "false", message: error.message });
   }
 };
 const cartDelete = async (req, res) => {
   try {
-    const { userId, cartId } = req.body;
-    if (req.user._id.toString() === userId) {
+    const userId = req.params.userId;
+    const cartId=req.params.cartId
+    if (req.user.isDeleted === true) {
+      return res
+        .status(400)
+        .send({ status: "false", message: "User doesn't exist!" });
+    }
+    
+    if (req.user._id.toString() !== userId) {
+      return res.status(400).send({
+        status: "false",
+        message: "You are not authorize to update the cart!",
+      });
+    }
+   
       let cartUpdatedDataDb = await cartModel.findOneAndUpdate(
-        { _id: cartId, isDeleted: false },
+        { _id: cartId, userId,isDeleted: false },
         { isDeleted: true },
         {
           new: true,
@@ -261,12 +287,7 @@ const cartDelete = async (req, res) => {
           message: "Data can't be deleted!",
         });
       }
-    } else {
-      return res.status(400).send({
-        status: "false",
-        message: "You are not authorize to delete the cart!",
-      });
-    }
+  
   } catch (error) {
     return res.status(500).send({ status: "false", message: error.message });
   }

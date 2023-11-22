@@ -35,7 +35,10 @@ router.delete("/admin/:adminId", adminController.adminDelete);
 //-------------------------Category routes---------------------------
 router.post("/admin/category", categoryController.categoryCreate);
 router.get("/admin/category", categoryController.categoryView);
-router.put("/admin/category/:categoryId", categoryController.categoryUpdateData);
+router.put(
+  "/admin/category/:categoryId",
+  categoryController.categoryUpdateData
+);
 router.delete("/admin/category/:categoryId", categoryController.categoryDelete);
 // -------------------------Admin Product routes---------------------------
 router.post("/admin/product", productController.productCreate);
@@ -55,10 +58,10 @@ router.get("/user/product", userProductController.productView);
 //--------------------------User Cart Routes------------------------------
 router.post("/user/cart", cartController.cartCreate);
 router.get("/user/cart/:userId", cartController.getCart);
-router.put("/user/cart", cartController.cartUpdate);
-router.delete("/user/cart", cartController.cartDelete);
+router.put("/user/cart/:userId/:cartId", cartController.cartUpdate);
+router.delete("/user/cart/:userId/:cartId", cartController.cartDelete);
 // ---------------------------User WishList Routes------------------------
 router.post("/user/wishlist", wishlistController.whisList);
-router.get("/user/wishlist/view", wishlistController.getWishList);
+router.get("/user/wishlist/:userId", wishlistController.getWishList);
 //----------------------------User Checkout Routes------------------------
 module.exports = router;
