@@ -14,6 +14,7 @@ let userController = require("../../Controllers/user/userController");
 let userProductController = require("../../Controllers/user/productController");
 let cartController = require("../../Controllers/user/cartController");
 let wishlistController = require("../../Controllers/user/whislistController");
+let orderController=require("../../Controllers/user/orderController")
 //calling our middleware
 var middleware = require("../../Service/middleware").middleware;
 //Admin Profile
@@ -35,10 +36,7 @@ router.delete("/admin/:adminId", adminController.adminDelete);
 //-------------------------Category routes---------------------------
 router.post("/admin/category", categoryController.categoryCreate);
 router.get("/admin/category", categoryController.categoryView);
-router.put(
-  "/admin/category/:categoryId",
-  categoryController.categoryUpdateData
-);
+router.put("/admin/category/:categoryId",categoryController.categoryUpdateData);
 router.delete("/admin/category/:categoryId", categoryController.categoryDelete);
 // -------------------------Admin Product routes---------------------------
 router.post("/admin/product", productController.productCreate);
@@ -64,4 +62,7 @@ router.delete("/user/cart/:userId/:cartId", cartController.cartDelete);
 router.post("/user/wishlist", wishlistController.whisList);
 router.get("/user/wishlist/:userId", wishlistController.getWishList);
 //----------------------------User Checkout Routes------------------------
+router.post("/user/order",orderController.createOrder)
+router.get("/user/order/:userId/:cartId",orderController.getOrder)
+router.put("/user/order/:orderId",orderController.getOrder)
 module.exports = router;
